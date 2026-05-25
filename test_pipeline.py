@@ -30,6 +30,7 @@ def run_complete_pipeline():
         print("Starting Validation Phase...")
         print("="*70 + "\n")
         
+        
         all_passed, validator = validate_dora_metrics(processed_df)
         
         # Step 3: Print Summary
