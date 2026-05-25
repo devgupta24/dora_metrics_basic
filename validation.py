@@ -134,6 +134,7 @@ class DataValidator:
         print("RUNNING VALIDATION CHECKS")
         print("="*50)
         
+        
         self.check_null_values()
         self.check_duplicate_rows()
         

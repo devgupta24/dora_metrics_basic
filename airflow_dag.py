@@ -15,6 +15,7 @@ from validation import validate_dora_metrics, DataValidator
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # Default arguments for the DAG
 default_args = {
     'owner': 'data-team',
