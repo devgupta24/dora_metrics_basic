@@ -13,8 +13,6 @@ logging.basicConfig(
     format='%(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-
 def run_complete_pipeline():
     """Run the complete ETL pipeline with validation"""
     
