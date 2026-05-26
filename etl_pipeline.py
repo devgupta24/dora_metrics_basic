@@ -14,7 +14,7 @@ class DORAMetricsPipeline:
         """Initialize the pipeline"""
         self.raw_data = None
         self.processed_data = None
-    
+ 
     def extract_raw_data(self) -> pd.DataFrame:
         """
         Extract raw data - simulates data extraction from source
