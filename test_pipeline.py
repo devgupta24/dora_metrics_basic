@@ -18,6 +18,7 @@ def run_complete_pipeline():
     print("\n" + "="*70)
     print(" DORA METRICS - COMPLETE ETL & VALIDATION PIPELINE")
     print("="*70 + "\n")
+    print("Improved monitoring stability")
     
     try:
         # Step 1: Run ETL Pipeline
