@@ -6,7 +6,6 @@ import logging
 
 from etl_pipeline import DORAMetricsPipeline
 from validation import validate_dora_metrics, DataValidator
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
