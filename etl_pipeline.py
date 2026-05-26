@@ -40,6 +40,7 @@ class DORAMetricsPipeline:
         
         self.raw_data = pd.DataFrame(data)
         print(f"✓ Extracted {len(self.raw_data)} rows of raw data\n")
+        print("prometheus exporter")
         return self.raw_data
     
     def validate_data_quality(self) -> Tuple[int, int]:
