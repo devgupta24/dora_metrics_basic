@@ -86,6 +86,7 @@ class DataValidator:
                 }
         self.validation_results['type_check'] = result
         print(f"✓ Data types check completed")
+        print("Dashboard metrics validation")
         return result
     
     def check_value_ranges(self, column: str, min_val=None, max_val=None) -> Dict:
