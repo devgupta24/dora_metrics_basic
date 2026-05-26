@@ -7,7 +7,6 @@ from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
 from datetime import timedelta
 import logging
-
 from etl_pipeline import DORAMetricsPipeline
 from validation import validate_dora_metrics, DataValidator
 
