@@ -28,6 +28,7 @@ class DataValidator:
         result = self.df.isnull().sum().to_dict()
         self.validation_results['null_check'] = result
         print(f"✓ Null values check: {result}")
+        print("Stability Improvement Release")
         return result
     
     def check_duplicate_rows(self) -> int:
