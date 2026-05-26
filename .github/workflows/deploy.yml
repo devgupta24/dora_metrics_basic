@@ -15,5 +15,8 @@ jobs:
 
       # - name: Run Deployment
         # run: echo "Deployment Successful"
-      - name: Simulate Deployment Failure
-        run: exit 1
+      # - name: Simulate Deployment Failure
+      #   run: exit 1
+
+      - name: Fixed Deployment
+        run: echo "Deployment Fixed Successfully"
