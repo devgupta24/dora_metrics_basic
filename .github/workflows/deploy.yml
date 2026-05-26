@@ -13,5 +13,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Run Deployment
-        run: echo "Deployment Successful"
+      # - name: Run Deployment
+        # run: echo "Deployment Successful"
+      - name: Simulate Deployment Failure
+        run: exit 1
