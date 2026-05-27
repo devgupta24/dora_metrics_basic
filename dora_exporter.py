@@ -1,11 +1,10 @@
 import json
 import time
-from datetime import datetime, timezone
 from prometheus_client import start_http_server, Gauge
 
-# -------------------------------
-# Prometheus Metrics
-# -------------------------------
+# -----------------------------------
+# DORA METRICS
+# -----------------------------------
 
 DEPLOY_FREQ = Gauge(
     'dora_deploy_frequency_per_day',
@@ -32,16 +31,11 @@ TOTAL_DEPLOYS = Gauge(
     'Total deployments'
 )
 
-ETL_ROWS = Gauge(
-    'dora_etl_pipeline_rows_processed',
-    'ETL rows processed'
-)
-
 METRICS_FILE = "metrics.json"
 
-# -------------------------------
-# Load metrics.json
-# -------------------------------
+# -----------------------------------
+# LOAD METRICS
+# -----------------------------------
 
 def load_metrics():
 
@@ -53,24 +47,22 @@ def load_metrics():
 
         return {
             "deployments": [],
-            "incidents": [],
-            "etl_runs": []
+            "incidents": []
         }
 
-# -------------------------------
-# Calculate Metrics
-# -------------------------------
+# -----------------------------------
+# CALCULATE DORA METRICS
+# -----------------------------------
 
 def calculate_metrics(data):
 
     deployments = data.get("deployments", [])
     incidents = data.get("incidents", [])
-    etl_runs = data.get("etl_runs", [])
 
-    # Deployment Frequency
+    # 1. Deployment Frequency
     deploy_freq = round(len(deployments) / 7, 2)
 
-    # Lead Time
+    # 2. Lead Time
     lead_times = [
         d["lead_time_hours"]
         for d in deployments
@@ -82,18 +74,21 @@ def calculate_metrics(data):
         if lead_times else 0
     )
 
-    # CFR
+    # 3. Change Failure Rate
     failed = [
         d for d in deployments
         if d["status"] == "failed"
     ]
 
     cfr = (
-        round((len(failed) / len(deployments)) * 100, 2)
+        round(
+            (len(failed) / len(deployments)) * 100,
+            2
+        )
         if deployments else 0
     )
 
-    # MTTR
+    # 4. MTTR
     mttr_values = [
         i["mttr_minutes"]
         for i in incidents
@@ -104,28 +99,24 @@ def calculate_metrics(data):
         if mttr_values else 0
     )
 
-    # ETL Rows
-    latest_rows = (
-        etl_runs[-1]["rows_processed"]
-        if etl_runs else 0
-    )
-
     return (
         deploy_freq,
         avg_lead_time,
         cfr,
         avg_mttr,
-        len(deployments),
-        latest_rows
+        len(deployments)
     )
 
-# -------------------------------
-# Main Loop
-# -------------------------------
+# -----------------------------------
+# MAIN LOOP
+# -----------------------------------
 
 def run():
 
+    print("=" * 50)
     print("Starting DORA Exporter on port 8001")
+    print("Metrics endpoint: http://localhost:8001/metrics")
+    print("=" * 50)
 
     start_http_server(8001)
 
@@ -138,8 +129,7 @@ def run():
             lead_time,
             cfr,
             mttr,
-            total_deploys,
-            etl_rows
+            total_deploys
         ) = calculate_metrics(data)
 
         DEPLOY_FREQ.set(deploy_freq)
@@ -147,20 +137,20 @@ def run():
         CFR.set(cfr)
         MTTR.set(mttr)
         TOTAL_DEPLOYS.set(total_deploys)
-        ETL_ROWS.set(etl_rows)
 
         print(
-            f"DeployFreq={deploy_freq} | "
+            f"DeployFreq={deploy_freq}/day | "
             f"LeadTime={lead_time}h | "
             f"CFR={cfr}% | "
-            f"MTTR={mttr}min"
+            f"MTTR={mttr}min | "
+            f"TotalDeploys={total_deploys}"
         )
 
         time.sleep(15)
 
-# -------------------------------
-# Start Exporter
-# -------------------------------
+# -----------------------------------
+# START EXPORTER
+# -----------------------------------
 
 if __name__ == "__main__":
     run()
