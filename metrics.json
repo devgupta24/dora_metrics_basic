@@ -1,0 +1,11 @@
+{
+  "deployments": [],
+  "incidents": [],
+  "etl_runs": [
+    {
+      "timestamp": "2026-05-27T12:24:34.929050+00:00",
+      "rows_processed": 3,
+      "status": "success"
+    }
+  ]
+}
