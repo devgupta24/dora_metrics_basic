@@ -1,11 +1,39 @@
 {
-  "deployments": [],
-  "incidents": [],
-  "etl_runs": [
+  "deployments": [
     {
-      "timestamp": "2026-05-27T12:24:34.929050+00:00",
-      "rows_processed": 3,
+      "timestamp": "2026-05-27T12:46:43.591403+00:00",
+      "status": "success",
+      "lead_time_hours": 5.2
+    }
+  ],
+  "incidents": [
+    {
+      "timestamp": "2026-05-27T12:46:47.230021+00:00",
+      "mttr_minutes": 35.0
+    }
+  ],
+  "pull_requests": [
+    {
+      "timestamp": "2026-05-27T12:42:37.734909+00:00",
+      "created_hours": 1.0,
+      "merged_hours": 5.0,
+      "review_hours": 2.0
+    }
+  ],
+  "builds": [
+    {
+      "timestamp": "2026-05-27T12:46:21.656647+00:00",
       "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T12:46:25.426644+00:00",
+      "status": "failed"
+    }
+  ],
+  "defects": [
+    {
+      "timestamp": "2026-05-27T12:46:28.776025+00:00",
+      "severity": "critical"
     }
   ]
 }
