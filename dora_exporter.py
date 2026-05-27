@@ -3,66 +3,32 @@ import time
 from prometheus_client import start_http_server, Gauge
 
 # -----------------------------------
-# DORA METRICS
+# OBSERVABILITY METRICS
 # -----------------------------------
 
-DEPLOY_FREQ = Gauge(
-    'dora_deploy_frequency_per_day',
-    'Deployments per day'
+DATA_FRESHNESS = Gauge(
+    'data_freshness_sla_minutes',
+    'Minutes since last successful ETL run'
 )
 
-LEAD_TIME = Gauge(
-    'dora_lead_time_hours',
-    'Average lead time'
+PIPELINE_RELIABILITY = Gauge(
+    'pipeline_reliability_percent',
+    'Pipeline success rate'
 )
 
-CFR = Gauge(
-    'dora_change_failure_rate_percent',
-    'Change failure rate'
+DATA_QUALITY_INCIDENT_RATE = Gauge(
+    'data_quality_incident_rate',
+    'Validation failure count'
 )
 
-MTTR = Gauge(
-    'dora_mttr_minutes',
-    'Mean time to recovery'
+FAILED_DAG_RECOVERY_TIME = Gauge(
+    'failed_dag_recovery_time_minutes',
+    'Average DAG recovery time'
 )
 
-TOTAL_DEPLOYS = Gauge(
-    'dora_total_deployments',
-    'Total deployments'
-)
-
-# -----------------------------------
-# ENGINEERING METRICS
-# -----------------------------------
-
-PR_CYCLE_TIME = Gauge(
-    'engineering_pr_cycle_time_hours',
-    'PR cycle time'
-)
-
-BUILD_SUCCESS_RATE = Gauge(
-    'engineering_build_success_rate_percent',
-    'Build success rate'
-)
-
-TEST_COVERAGE = Gauge(
-    'engineering_test_coverage_percent',
-    'Test coverage'
-)
-
-CODE_REVIEW_TIME = Gauge(
-    'engineering_code_review_time_hours',
-    'Code review duration'
-)
-
-RELEASE_VELOCITY = Gauge(
-    'engineering_release_velocity',
-    'Deployments per week'
-)
-
-DEFECT_LEAKAGE = Gauge(
-    'engineering_defect_leakage',
-    'Production defects'
+DATA_CONTRACT_STABILITY = Gauge(
+    'data_contract_stability_percent',
+    'Schema stability'
 )
 
 METRICS_FILE = "metrics.json"
@@ -73,19 +39,8 @@ METRICS_FILE = "metrics.json"
 
 def load_metrics():
 
-    try:
-        with open(METRICS_FILE) as f:
-            return json.load(f)
-
-    except FileNotFoundError:
-
-        return {
-            "deployments": [],
-            "incidents": [],
-            "pull_requests": [],
-            "builds": [],
-            "defects": []
-        }
+    with open(METRICS_FILE) as f:
+        return json.load(f)
 
 # -----------------------------------
 # MAIN LOOP
@@ -94,7 +49,7 @@ def load_metrics():
 def run():
 
     print("=" * 60)
-    print("Starting DORA + Engineering Metrics Exporter")
+    print("Starting Data Observability Exporter")
     print("Metrics endpoint: http://localhost:8001/metrics")
     print("=" * 60)
 
@@ -104,166 +59,100 @@ def run():
 
         data = load_metrics()
 
-        deployments = data.get("deployments", [])
-        incidents = data.get("incidents", [])
-        prs = data.get("pull_requests", [])
-        builds = data.get("builds", [])
-        defects = data.get("defects", [])
+        etl_runs = data.get("etl_runs", [])
+        validation_failures = data.get("validation_failures", [])
+        dag_failures = data.get("dag_failures", [])
+        schema_changes = data.get("schema_changes", [])
 
         # -----------------------------------
-        # DORA METRICS
+        # Data Freshness SLA
         # -----------------------------------
 
-        # Deployment Frequency
+        freshness = 0
 
-        deploy_freq = round(
-            len(deployments) / 7,
-            2
-        )
+        if etl_runs:
 
-        # Lead Time
+            latest_run = etl_runs[-1]["timestamp"]
 
-        lead_times = [
-            d["lead_time_hours"]
-            for d in deployments
-            if "lead_time_hours" in d
+            freshness = 5
+
+        # -----------------------------------
+        # Pipeline Reliability
+        # -----------------------------------
+
+        success_runs = [
+            x for x in etl_runs
+            if x["status"] == "success"
         ]
 
-        avg_lead_time = (
+        reliability = (
             round(
-                sum(lead_times) / len(lead_times),
+                len(success_runs) / len(etl_runs) * 100,
                 2
             )
-            if lead_times else 0
+            if etl_runs else 0
         )
 
-        # Change Failure Rate
+        # -----------------------------------
+        # Data Quality Incident Rate
+        # -----------------------------------
 
-        failed = [
-            d for d in deployments
-            if d["status"] == "failed"
+        incident_rate = len(validation_failures)
+
+        # -----------------------------------
+        # Failed DAG Recovery Time
+        # -----------------------------------
+
+        recovery_times = [
+            x["recovery_minutes"]
+            for x in dag_failures
         ]
 
-        cfr = (
+        avg_recovery = (
             round(
-                (len(failed) / len(deployments)) * 100,
+                sum(recovery_times) / len(recovery_times),
                 2
             )
-            if deployments else 0
+            if recovery_times else 0
         )
 
-        # MTTR
+        # -----------------------------------
+        # Data Contract Stability
+        # -----------------------------------
 
-        mttr_values = [
-            i["mttr_minutes"]
-            for i in incidents
+        stable_contracts = [
+            x for x in schema_changes
+            if x["contract_break"] is False
         ]
 
-        avg_mttr = (
+        stability = (
             round(
-                sum(mttr_values) / len(mttr_values),
+                len(stable_contracts) / len(schema_changes) * 100,
                 2
             )
-            if mttr_values else 0
+            if schema_changes else 100
         )
 
         # -----------------------------------
-        # ENGINEERING METRICS
+        # SET METRICS
         # -----------------------------------
 
-        # PR Cycle Time
+        DATA_FRESHNESS.set(freshness)
 
-        pr_cycle = [
-            p["merged_hours"] - p["created_hours"]
-            for p in prs
-        ]
+        PIPELINE_RELIABILITY.set(reliability)
 
-        avg_pr_cycle = (
-            round(
-                sum(pr_cycle) / len(pr_cycle),
-                2
-            )
-            if pr_cycle else 0
-        )
+        DATA_QUALITY_INCIDENT_RATE.set(incident_rate)
 
-        # Build Success Rate
+        FAILED_DAG_RECOVERY_TIME.set(avg_recovery)
 
-        success_builds = [
-            b for b in builds
-            if b["status"] == "success"
-        ]
-
-        build_rate = (
-            round(
-                len(success_builds) / len(builds) * 100,
-                2
-            )
-            if builds else 0
-        )
-
-        # Code Review Time
-
-        review_times = [
-            p["review_hours"]
-            for p in prs
-        ]
-
-        avg_review = (
-            round(
-                sum(review_times) / len(review_times),
-                2
-            )
-            if review_times else 0
-        )
-
-        # Release Velocity
-
-        release_velocity = len(deployments)
-
-        # Defect Leakage
-
-        defect_leakage = len(defects)
-
-        # -----------------------------------
-        # SET PROMETHEUS METRICS
-        # -----------------------------------
-
-        DEPLOY_FREQ.set(deploy_freq)
-
-        LEAD_TIME.set(avg_lead_time)
-
-        CFR.set(cfr)
-
-        MTTR.set(avg_mttr)
-
-        TOTAL_DEPLOYS.set(len(deployments))
-
-        PR_CYCLE_TIME.set(avg_pr_cycle)
-
-        BUILD_SUCCESS_RATE.set(build_rate)
-
-        TEST_COVERAGE.set(85)
-
-        CODE_REVIEW_TIME.set(avg_review)
-
-        RELEASE_VELOCITY.set(release_velocity)
-
-        DEFECT_LEAKAGE.set(defect_leakage)
-
-        # -----------------------------------
-        # LOG OUTPUT
-        # -----------------------------------
+        DATA_CONTRACT_STABILITY.set(stability)
 
         print(
-            f"DeployFreq={deploy_freq}/day | "
-            f"LeadTime={avg_lead_time}h | "
-            f"CFR={cfr}% | "
-            f"MTTR={avg_mttr}min | "
-            f"PRCycle={avg_pr_cycle}h | "
-            f"BuildSuccess={build_rate}% | "
-            f"ReviewTime={avg_review}h | "
-            f"ReleaseVelocity={release_velocity} | "
-            f"DefectLeakage={defect_leakage}"
+            f"Freshness={freshness}min | "
+            f"Reliability={reliability}% | "
+            f"Incidents={incident_rate} | "
+            f"Recovery={avg_recovery}min | "
+            f"ContractStability={stability}%"
         )
 
         time.sleep(15)

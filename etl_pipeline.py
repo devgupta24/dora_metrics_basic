@@ -2,41 +2,92 @@ import pandas as pd
 import json
 from datetime import datetime, timezone
 
-# Sample ETL data
+# -----------------------------------
+# SAMPLE ETL DATA
+# -----------------------------------
+
 data = {
     "Name": ["Alice", "Bob", "Charlie"],
     "Amount": [100, 200, 300]
 }
 
+# -----------------------------------
+# CREATE DATAFRAME
+# -----------------------------------
+
 df = pd.DataFrame(data)
 
 print(df)
 
-rows_processed = len(df)
+# -----------------------------------
+# LOAD METRICS FILE
+# -----------------------------------
 
-etl_event = {
-    "timestamp": datetime.now(timezone.utc).isoformat(),
-    "rows_processed": rows_processed,
-    "status": "success"
-}
-
-# Load metrics file
 try:
+
     with open("metrics.json") as f:
         metrics = json.load(f)
 
 except:
+
     metrics = {
-        "deployments": [],
-        "incidents": [],
-        "etl_runs": []
+        "etl_runs": [],
+        "validation_failures": [],
+        "dag_failures": [],
+        "schema_changes": []
     }
 
-# Append ETL run
+# -----------------------------------
+# ETL EVENT
+# -----------------------------------
+
+etl_event = {
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "rows_processed": len(df),
+    "status": "success"
+}
+
 metrics["etl_runs"].append(etl_event)
 
-# Save metrics
+# -----------------------------------
+# SAMPLE VALIDATION FAILURE
+# -----------------------------------
+
+validation_event = {
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "failed_records": 2
+}
+
+metrics["validation_failures"].append(validation_event)
+
+# -----------------------------------
+# SAMPLE DAG FAILURE
+# -----------------------------------
+
+dag_failure = {
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "recovery_minutes": 15
+}
+
+metrics["dag_failures"].append(dag_failure)
+
+# -----------------------------------
+# SAMPLE SCHEMA CHANGE
+# -----------------------------------
+
+schema_change = {
+    "timestamp": datetime.now(timezone.utc).isoformat(),
+    "contract_break": False
+}
+
+metrics["schema_changes"].append(schema_change)
+
+# -----------------------------------
+# SAVE METRICS
+# -----------------------------------
+
 with open("metrics.json", "w") as f:
+
     json.dump(metrics, f, indent=2)
 
-print("ETL metrics updated successfully")
+print("ETL observability metrics updated successfully")

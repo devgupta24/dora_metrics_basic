@@ -1,39 +1,27 @@
 {
-  "deployments": [
+  "etl_runs": [
     {
-      "timestamp": "2026-05-27T12:46:43.591403+00:00",
-      "status": "success",
-      "lead_time_hours": 5.2
-    }
-  ],
-  "incidents": [
-    {
-      "timestamp": "2026-05-27T12:46:47.230021+00:00",
-      "mttr_minutes": 35.0
-    }
-  ],
-  "pull_requests": [
-    {
-      "timestamp": "2026-05-27T12:42:37.734909+00:00",
-      "created_hours": 1.0,
-      "merged_hours": 5.0,
-      "review_hours": 2.0
-    }
-  ],
-  "builds": [
-    {
-      "timestamp": "2026-05-27T12:46:21.656647+00:00",
+      "timestamp": "2026-05-27T13:17:51.762853+00:00",
+      "rows_processed": 3,
       "status": "success"
-    },
-    {
-      "timestamp": "2026-05-27T12:46:25.426644+00:00",
-      "status": "failed"
     }
   ],
-  "defects": [
+  "validation_failures": [
     {
-      "timestamp": "2026-05-27T12:46:28.776025+00:00",
-      "severity": "critical"
+      "timestamp": "2026-05-27T13:17:51.762873+00:00",
+      "failed_records": 2
+    }
+  ],
+  "dag_failures": [
+    {
+      "timestamp": "2026-05-27T13:17:51.762878+00:00",
+      "recovery_minutes": 15
+    }
+  ],
+  "schema_changes": [
+    {
+      "timestamp": "2026-05-27T13:17:51.762883+00:00",
+      "contract_break": false
     }
   ]
 }
