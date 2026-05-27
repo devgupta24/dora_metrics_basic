@@ -1,23 +1,6 @@
-import pandas as pd
 import json
+import random
 from datetime import datetime, timezone
-
-# -----------------------------------
-# SAMPLE ETL DATA
-# -----------------------------------
-
-data = {
-    "Name": ["Alice", "Bob", "Charlie"],
-    "Amount": [100, 200, 300]
-}
-
-# -----------------------------------
-# CREATE DATAFRAME
-# -----------------------------------
-
-df = pd.DataFrame(data)
-
-print(df)
 
 # -----------------------------------
 # LOAD METRICS FILE
@@ -31,56 +14,59 @@ try:
 except:
 
     metrics = {
-        "etl_runs": [],
-        "validation_failures": [],
-        "dag_failures": [],
-        "schema_changes": []
+        "system_health": [],
+        "runtime_events": [],
+        "sla_events": [],
+        "production_failures": []
     }
 
+timestamp = datetime.now(timezone.utc).isoformat()
+
 # -----------------------------------
-# ETL EVENT
+# SYSTEM HEALTH
 # -----------------------------------
 
-etl_event = {
-    "timestamp": datetime.now(timezone.utc).isoformat(),
-    "rows_processed": len(df),
-    "status": "success"
+health_event = {
+    "timestamp": timestamp,
+    "cpu_usage": random.randint(20, 80),
+    "memory_usage": random.randint(30, 85),
+    "status": "healthy"
 }
 
-metrics["etl_runs"].append(etl_event)
+metrics["system_health"].append(health_event)
 
 # -----------------------------------
-# SAMPLE VALIDATION FAILURE
+# RUNTIME EVENT
 # -----------------------------------
 
-validation_event = {
-    "timestamp": datetime.now(timezone.utc).isoformat(),
-    "failed_records": 2
+runtime_event = {
+    "timestamp": timestamp,
+    "status": random.choice(["success", "success", "success", "failed"])
 }
 
-metrics["validation_failures"].append(validation_event)
+metrics["runtime_events"].append(runtime_event)
 
 # -----------------------------------
-# SAMPLE DAG FAILURE
+# SLA EVENT
 # -----------------------------------
 
-dag_failure = {
-    "timestamp": datetime.now(timezone.utc).isoformat(),
-    "recovery_minutes": 15
+sla_event = {
+    "timestamp": timestamp,
+    "sla_met": random.choice([True, True, True, False])
 }
 
-metrics["dag_failures"].append(dag_failure)
+metrics["sla_events"].append(sla_event)
 
 # -----------------------------------
-# SAMPLE SCHEMA CHANGE
+# PRODUCTION FAILURE
 # -----------------------------------
 
-schema_change = {
-    "timestamp": datetime.now(timezone.utc).isoformat(),
-    "contract_break": False
+failure_event = {
+    "timestamp": timestamp,
+    "severity": random.choice(["low", "medium", "high"])
 }
 
-metrics["schema_changes"].append(schema_change)
+metrics["production_failures"].append(failure_event)
 
 # -----------------------------------
 # SAVE METRICS
@@ -90,4 +76,4 @@ with open("metrics.json", "w") as f:
 
     json.dump(metrics, f, indent=2)
 
-print("ETL observability metrics updated successfully")
+print("Operational metrics updated successfully")

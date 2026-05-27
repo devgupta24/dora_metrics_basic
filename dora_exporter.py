@@ -3,32 +3,32 @@ import time
 from prometheus_client import start_http_server, Gauge
 
 # -----------------------------------
-# OBSERVABILITY METRICS
+# OPERATIONAL METRICS
 # -----------------------------------
 
-DATA_FRESHNESS = Gauge(
-    'data_freshness_sla_minutes',
-    'Minutes since last successful ETL run'
+SYSTEM_HEALTH = Gauge(
+    'runtime_system_health_percent',
+    'Runtime system health'
 )
 
-PIPELINE_RELIABILITY = Gauge(
-    'pipeline_reliability_percent',
-    'Pipeline success rate'
+RELIABILITY = Gauge(
+    'runtime_reliability_percent',
+    'Runtime reliability'
 )
 
-DATA_QUALITY_INCIDENT_RATE = Gauge(
-    'data_quality_incident_rate',
-    'Validation failure count'
+AVAILABILITY = Gauge(
+    'runtime_availability_percent',
+    'Availability'
 )
 
-FAILED_DAG_RECOVERY_TIME = Gauge(
-    'failed_dag_recovery_time_minutes',
-    'Average DAG recovery time'
+SLA_ADHERENCE = Gauge(
+    'runtime_sla_adherence_percent',
+    'SLA adherence'
 )
 
-DATA_CONTRACT_STABILITY = Gauge(
-    'data_contract_stability_percent',
-    'Schema stability'
+PRODUCTION_STABILITY = Gauge(
+    'production_stability_percent',
+    'Production stability'
 )
 
 METRICS_FILE = "metrics.json"
@@ -49,7 +49,7 @@ def load_metrics():
 def run():
 
     print("=" * 60)
-    print("Starting Data Observability Exporter")
+    print("Starting Operational Metrics Exporter")
     print("Metrics endpoint: http://localhost:8001/metrics")
     print("=" * 60)
 
@@ -59,100 +59,104 @@ def run():
 
         data = load_metrics()
 
-        etl_runs = data.get("etl_runs", [])
-        validation_failures = data.get("validation_failures", [])
-        dag_failures = data.get("dag_failures", [])
-        schema_changes = data.get("schema_changes", [])
+        system_health = data.get("system_health", [])
+        runtime_events = data.get("runtime_events", [])
+        sla_events = data.get("sla_events", [])
+        production_failures = data.get("production_failures", [])
 
         # -----------------------------------
-        # Data Freshness SLA
+        # Runtime System Health
         # -----------------------------------
 
-        freshness = 0
+        avg_cpu = (
+            sum(x["cpu_usage"] for x in system_health)
+            / len(system_health)
+            if system_health else 0
+        )
 
-        if etl_runs:
-
-            latest_run = etl_runs[-1]["timestamp"]
-
-            freshness = 5
+        health_score = round(100 - avg_cpu, 2)
 
         # -----------------------------------
-        # Pipeline Reliability
+        # Reliability
         # -----------------------------------
 
         success_runs = [
-            x for x in etl_runs
+            x for x in runtime_events
             if x["status"] == "success"
         ]
 
         reliability = (
             round(
-                len(success_runs) / len(etl_runs) * 100,
+                len(success_runs) / len(runtime_events) * 100,
                 2
             )
-            if etl_runs else 0
+            if runtime_events else 0
         )
 
         # -----------------------------------
-        # Data Quality Incident Rate
+        # Availability
         # -----------------------------------
 
-        incident_rate = len(validation_failures)
+        availability = reliability
 
         # -----------------------------------
-        # Failed DAG Recovery Time
+        # SLA Adherence
         # -----------------------------------
 
-        recovery_times = [
-            x["recovery_minutes"]
-            for x in dag_failures
+        sla_success = [
+            x for x in sla_events
+            if x["sla_met"] is True
         ]
 
-        avg_recovery = (
+        sla_score = (
             round(
-                sum(recovery_times) / len(recovery_times),
+                len(sla_success) / len(sla_events) * 100,
                 2
             )
-            if recovery_times else 0
+            if sla_events else 0
         )
 
         # -----------------------------------
-        # Data Contract Stability
+        # Production Stability
         # -----------------------------------
 
-        stable_contracts = [
-            x for x in schema_changes
-            if x["contract_break"] is False
+        high_failures = [
+            x for x in production_failures
+            if x["severity"] == "high"
         ]
 
         stability = (
             round(
-                len(stable_contracts) / len(schema_changes) * 100,
+                100 - (
+                    len(high_failures)
+                    / len(production_failures)
+                    * 100
+                ),
                 2
             )
-            if schema_changes else 100
+            if production_failures else 100
         )
 
         # -----------------------------------
         # SET METRICS
         # -----------------------------------
 
-        DATA_FRESHNESS.set(freshness)
+        SYSTEM_HEALTH.set(health_score)
 
-        PIPELINE_RELIABILITY.set(reliability)
+        RELIABILITY.set(reliability)
 
-        DATA_QUALITY_INCIDENT_RATE.set(incident_rate)
+        AVAILABILITY.set(availability)
 
-        FAILED_DAG_RECOVERY_TIME.set(avg_recovery)
+        SLA_ADHERENCE.set(sla_score)
 
-        DATA_CONTRACT_STABILITY.set(stability)
+        PRODUCTION_STABILITY.set(stability)
 
         print(
-            f"Freshness={freshness}min | "
+            f"Health={health_score}% | "
             f"Reliability={reliability}% | "
-            f"Incidents={incident_rate} | "
-            f"Recovery={avg_recovery}min | "
-            f"ContractStability={stability}%"
+            f"Availability={availability}% | "
+            f"SLA={sla_score}% | "
+            f"Stability={stability}%"
         )
 
         time.sleep(15)

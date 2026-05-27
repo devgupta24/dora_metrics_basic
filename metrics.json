@@ -1,27 +1,208 @@
 {
-  "etl_runs": [
+  "system_health": [
     {
-      "timestamp": "2026-05-27T13:17:51.762853+00:00",
-      "rows_processed": 3,
+      "timestamp": "2026-05-27T13:29:08.403394+00:00",
+      "cpu_usage": 77,
+      "memory_usage": 31,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:15.153555+00:00",
+      "cpu_usage": 28,
+      "memory_usage": 68,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.108905+00:00",
+      "cpu_usage": 78,
+      "memory_usage": 44,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.931861+00:00",
+      "cpu_usage": 75,
+      "memory_usage": 33,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:17.708178+00:00",
+      "cpu_usage": 52,
+      "memory_usage": 46,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.340921+00:00",
+      "cpu_usage": 25,
+      "memory_usage": 53,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.936905+00:00",
+      "cpu_usage": 43,
+      "memory_usage": 36,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:19.519663+00:00",
+      "cpu_usage": 48,
+      "memory_usage": 42,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.128486+00:00",
+      "cpu_usage": 78,
+      "memory_usage": 84,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.714462+00:00",
+      "cpu_usage": 59,
+      "memory_usage": 76,
+      "status": "healthy"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:22.076733+00:00",
+      "cpu_usage": 22,
+      "memory_usage": 75,
+      "status": "healthy"
+    }
+  ],
+  "runtime_events": [
+    {
+      "timestamp": "2026-05-27T13:29:08.403394+00:00",
+      "status": "failed"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:15.153555+00:00",
       "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.108905+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.931861+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:17.708178+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.340921+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.936905+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:19.519663+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.128486+00:00",
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.714462+00:00",
+      "status": "failed"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:22.076733+00:00",
+      "status": "failed"
     }
   ],
-  "validation_failures": [
+  "sla_events": [
     {
-      "timestamp": "2026-05-27T13:17:51.762873+00:00",
-      "failed_records": 2
+      "timestamp": "2026-05-27T13:29:08.403394+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:15.153555+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.108905+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.931861+00:00",
+      "sla_met": false
+    },
+    {
+      "timestamp": "2026-05-27T13:29:17.708178+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.340921+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.936905+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:19.519663+00:00",
+      "sla_met": true
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.128486+00:00",
+      "sla_met": false
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.714462+00:00",
+      "sla_met": false
+    },
+    {
+      "timestamp": "2026-05-27T13:29:22.076733+00:00",
+      "sla_met": true
     }
   ],
-  "dag_failures": [
+  "production_failures": [
     {
-      "timestamp": "2026-05-27T13:17:51.762878+00:00",
-      "recovery_minutes": 15
-    }
-  ],
-  "schema_changes": [
+      "timestamp": "2026-05-27T13:29:08.403394+00:00",
+      "severity": "high"
+    },
     {
-      "timestamp": "2026-05-27T13:17:51.762883+00:00",
-      "contract_break": false
+      "timestamp": "2026-05-27T13:29:15.153555+00:00",
+      "severity": "high"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.108905+00:00",
+      "severity": "medium"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:16.931861+00:00",
+      "severity": "low"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:17.708178+00:00",
+      "severity": "low"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.340921+00:00",
+      "severity": "high"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:18.936905+00:00",
+      "severity": "high"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:19.519663+00:00",
+      "severity": "high"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.128486+00:00",
+      "severity": "low"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:20.714462+00:00",
+      "severity": "high"
+    },
+    {
+      "timestamp": "2026-05-27T13:29:22.076733+00:00",
+      "severity": "high"
     }
   ]
 }
